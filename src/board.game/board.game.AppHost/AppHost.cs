@@ -26,6 +26,5 @@ builder.AddProject<board_game_Web>("webfrontend")
     .WithReference(apiService)
     .WaitFor(apiService);
 
-builder.AddProject<board_game_MigrationService>("board-game-migrationservice");
 
 builder.Build().Run();
