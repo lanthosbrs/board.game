@@ -1,4 +1,5 @@
-﻿using board.game.GameDb.Models;
+﻿using board.game.GameDb.Context;
+using board.game.GameDb.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,11 +8,11 @@ namespace board.game.Services
 {
     public class GameServices : IGameServices
     {
-        private readonly IGameServices _gameService;
+        private readonly GameDbContext _context;
 
-        public GameServices(IGameServices gameService)
+        public GameServices(GameDbContext context)
         {
-            _gameService = gameService;
+            _context = context;
         }
 
         public void AddGame(Game game)
@@ -21,7 +22,8 @@ namespace board.game.Services
 
         public IEnumerable<Game> GetAllGames()
         {
-            throw new NotImplementedException();
+            return _context.Games.ToList();
+
         }
 
         public Game GetGameById(int id)

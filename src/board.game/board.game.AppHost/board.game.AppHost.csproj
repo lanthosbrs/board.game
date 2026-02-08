@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\board.game.ApiService\board.game.Api.csproj" />
+    <ProjectReference Include="..\board.game.MigrationService\board.game.MigrationService.csproj" />
     <ProjectReference Include="..\board.game.Web\board.game.Web.csproj" />
   </ItemGroup>
 

@@ -12,9 +12,5 @@ namespace board.game.GameDb.Context
     {
         public DbSet<Game> Games => Set<Game>();
 
-
-
-
-
     }
 }
