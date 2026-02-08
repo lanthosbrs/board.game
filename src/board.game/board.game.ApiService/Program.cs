@@ -1,4 +1,11 @@
+
+using board.game.GameDb.Context;
+
 var builder = WebApplication.CreateBuilder(args);
+
+
+//Add the db
+builder.AddNpgsqlDbContext<GameDbContext>("boardgames");
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();

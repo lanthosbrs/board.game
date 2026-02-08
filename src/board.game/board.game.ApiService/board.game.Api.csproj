@@ -7,11 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\board.game.GameDb\board.game.GameDb.csproj" />
     <ProjectReference Include="..\board.game.ServiceDefaults\board.game.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\board.game.Services\board.game.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0-rc.1.25451.107" />
+    <PackageReference Include="Aspire.Azure.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
   </ItemGroup>
 
 </Project>
