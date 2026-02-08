@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="board.game.ApiService/board.game.Api.csproj" />
+  <Project Path="board.game.AppHost/board.game.AppHost.csproj" />
+  <Project Path="board.game.ServiceDefaults/board.game.ServiceDefaults.csproj" />
+  <Project Path="board.game.Tests/board.game.Tests.csproj" />
+  <Project Path="board.game.Web/board.game.Web.csproj" />
+</Solution>
