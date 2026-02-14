@@ -1,4 +1,6 @@
-:root {
+/* Light theme (default) */
+:root,
+[data-theme="light"] {
     --bg-page: #f5f1eb;
     --bg-card: #fff;
     --bg-sidebar: #1a2f38;
@@ -16,6 +18,122 @@
     --radius: 12px;
     --radius-sm: 8px;
     --font-sans: 'DM Sans', system-ui, sans-serif;
+    --img-placeholder: linear-gradient(145deg, #e8e4dc 0%, #d4cfc4 100%);
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --bg-page: #1a1d21;
+    --bg-card: #25282d;
+    --bg-sidebar: #141619;
+    --bg-sidebar-hover: rgba(255, 255, 255, 0.08);
+    --bg-sidebar-active: rgba(212, 175, 55, 0.25);
+    --accent: #d4af37;
+    --accent-hover: #e4bf47;
+    --text: #e8eaed;
+    --text-muted: #9aa0a6;
+    --border: #3c4043;
+    --danger: #ea4335;
+    --danger-hover: #f06052;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --img-placeholder: linear-gradient(145deg, #2d3136 0%, #3c4043 100%);
+}
+
+[data-theme="dark"] .alert-danger {
+    background: rgba(234, 67, 53, 0.15);
+    border-color: rgba(234, 67, 53, 0.4);
+}
+
+[data-theme="dark"] .modal-overlay {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* Force dark theme on all content so Bootstrap and scoped CSS don't override */
+[data-theme="dark"] body,
+[data-theme="dark"] .app-layout,
+[data-theme="dark"] .main-content,
+[data-theme="dark"] .content,
+[data-theme="dark"] article {
+    background-color: var(--bg-page) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+[data-theme="dark"] .page-title,
+[data-theme="dark"] p,
+[data-theme="dark"] label,
+[data-theme="dark"] .form-label {
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] .form-text {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+    background-color: var(--bg-card) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .form-control::placeholder,
+[data-theme="dark"] input::placeholder {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .table {
+    color: var(--text);
+}
+
+[data-theme="dark"] .table th,
+[data-theme="dark"] .table td {
+    border-color: var(--border);
+    color: var(--text);
+}
+
+[data-theme="dark"] .modal-content {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border);
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-body,
+[data-theme="dark"] .modal-footer {
+    background-color: var(--bg-card);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+[data-theme="dark"] .btn-close {
+    filter: invert(1);
+}
+
+[data-theme="dark"] .btn-secondary {
+    background-color: var(--border);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+    background-color: var(--text-muted);
+    border-color: var(--text-muted);
+    color: var(--bg-card);
+}
+
+[data-theme="dark"] .validation-message,
+[data-theme="dark"] .text-danger {
+    color: var(--danger) !important;
 }
 
 html, body {
@@ -200,7 +318,7 @@ h1:focus {
 
 .game-card-image {
     aspect-ratio: 4/3;
-    background: linear-gradient(145deg, #e8e4dc 0%, #d4cfc4 100%);
+    background: var(--img-placeholder);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -276,7 +394,7 @@ h1:focus {
 .detail-thumb {
     aspect-ratio: 16/6;
     max-height: 240px;
-    background: linear-gradient(145deg, #e8e4dc 0%, #d4cfc4 100%);
+    background: var(--img-placeholder);
     overflow: hidden;
 }
 
@@ -387,4 +505,18 @@ h1:focus {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
+}
+
+/* Settings */
+.settings-section {
+    max-width: 36rem;
+}
+
+.settings-section .btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.theme-select {
+    max-width: 10rem;
 }

@@ -1,0 +1,74 @@
+@page "/settings"
+@rendermode InteractiveServer
+@using board.game.Web.Components.Layout
+@inject IJSRuntime JS
+
+<PageTitle>Settings</PageTitle>
+
+<Breadcrumb Items="_breadcrumb" />
+
+<h1 class="page-title mb-4">Settings</h1>
+
+<div class="settings-section card-theme p-4 mb-4">
+    <h2 class="h5 mb-2">Appearance</h2>
+    <p class="text-muted mb-3">
+        Choose light or dark mode for the interface.
+    </p>
+    <div class="theme-switcher">
+        <select class="form-select form-select-sm theme-select" value="@_theme" @onchange="OnThemeChanged" disabled="@(!_themeLoaded)">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+        </select>
+    </div>
+</div>
+
+<div class="settings-section card-theme p-4 mb-4">
+    <h2 class="h5 mb-2">Import from BoardGameGeek</h2>
+    <p class="text-muted mb-3">
+        Import your board game collection from your BoardGameGeek (BGG) library. This will add games from your BGG account into this app.
+    </p>
+    <button type="button" class="btn btn-primary" disabled aria-disabled="true" title="Not yet available">
+        Import BGG library
+    </button>
+    <span class="text-muted small ms-2">Coming soon</span>
+</div>
+
+@code {
+    private static readonly IReadOnlyList<BreadcrumbItem> _breadcrumb =
+    [
+        new BreadcrumbItem { Label = "Settings" }
+    ];
+
+    private string _theme = "light";
+    private bool _themeLoaded;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _theme = await JS.InvokeAsync<string>("eval", "window.boardgameTheme ? window.boardgameTheme.get() : 'light'");
+                _themeLoaded = true;
+                await InvokeAsync(StateHasChanged);
+            }
+            catch
+            {
+                _themeLoaded = true;
+            }
+        }
+    }
+
+    private async Task OnThemeChanged(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString();
+        if (string.IsNullOrEmpty(value) || (value != "light" && value != "dark"))
+            return;
+        try
+        {
+            await JS.InvokeVoidAsync("eval", "window.boardgameTheme && window.boardgameTheme.set('" + value + "')");
+            _theme = value;
+        }
+        catch { }
+    }
+}
