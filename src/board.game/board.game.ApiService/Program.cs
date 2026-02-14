@@ -37,6 +37,7 @@ public partial class Program
             app.MapOpenApi();
         }
 
+        app.MapControllers();
         app.MapDefaultEndpoints();
 
         app.Run();
