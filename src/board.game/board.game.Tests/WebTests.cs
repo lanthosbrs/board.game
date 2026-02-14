@@ -7,34 +7,67 @@ public class WebTests
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
 
-    [TestMethod]
-    public async Task GetWebResourceRootReturnsOkStatusCode()
+    private static async Task<(DistributedApplication app, CancellationToken ct)> StartWebAppAsync()
     {
-        // Arrange
         var cancellationToken = new CancellationTokenSource(DefaultTimeout).Token;
-
         var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.board_game_AppHost>(cancellationToken);
         appHost.Services.AddLogging(logging =>
         {
-            logging.SetMinimumLevel(LogLevel.Debug);
-            // Override the logging filters from the app's configuration
-            logging.AddFilter(appHost.Environment.ApplicationName, LogLevel.Debug);
-            logging.AddFilter("Aspire.", LogLevel.Debug);
+            logging.SetMinimumLevel(LogLevel.Warning);
+            logging.AddFilter("Aspire.", LogLevel.Information);
         });
         appHost.Services.ConfigureHttpClientDefaults(clientBuilder =>
         {
             clientBuilder.AddStandardResilienceHandler();
         });
 
-        await using var app = await appHost.BuildAsync(cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
+        var app = await appHost.BuildAsync(cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
         await app.StartAsync(cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
+        return (app, cancellationToken);
+    }
 
-        // Act
-        var httpClient = app.CreateHttpClient("webfrontend");
-        await app.ResourceNotifications.WaitForResourceHealthyAsync("webfrontend", cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
-        var response = await httpClient.GetAsync("/", cancellationToken);
+    [TestMethod]
+    public async Task Web_GetRoot_ReturnsOk()
+    {
+        var (app, ct) = await StartWebAppAsync();
+        await using (app)
+        {
+            var client = app.CreateHttpClient("webfrontend");
+            await app.ResourceNotifications.WaitForResourceHealthyAsync("webfrontend", ct).WaitAsync(DefaultTimeout, ct);
 
-        // Assert
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            var response = await client.GetAsync("/", ct);
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        }
+    }
+
+    [TestMethod]
+    public async Task Web_GetGamesPage_ReturnsOk()
+    {
+        var (app, ct) = await StartWebAppAsync();
+        await using (app)
+        {
+            var client = app.CreateHttpClient("webfrontend");
+            await app.ResourceNotifications.WaitForResourceHealthyAsync("webfrontend", ct).WaitAsync(DefaultTimeout, ct);
+
+            var response = await client.GetAsync("/games", ct);
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        }
+    }
+
+    [TestMethod]
+    public async Task Web_GetSettingsPage_ReturnsOk()
+    {
+        var (app, ct) = await StartWebAppAsync();
+        await using (app)
+        {
+            var client = app.CreateHttpClient("webfrontend");
+            await app.ResourceNotifications.WaitForResourceHealthyAsync("webfrontend", ct).WaitAsync(DefaultTimeout, ct);
+
+            var response = await client.GetAsync("/settings", ct);
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        }
     }
 }
