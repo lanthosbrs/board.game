@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace board.game.GameDb.Models
 {
     public class Game
     {
         public int Id { get; set; }
+
+        [Required]
         public required string Name { get; set; }
         public string? Description { get; set; }
         public string? BggLink { get; set; }

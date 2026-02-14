@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\board.game.GameDb\board.game.GameDb.csproj" />
     <ProjectReference Include="..\board.game.ServiceDefaults\board.game.ServiceDefaults.csproj" />
   </ItemGroup>
 
