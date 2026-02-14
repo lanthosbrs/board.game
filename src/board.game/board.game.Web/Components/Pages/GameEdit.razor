@@ -1,0 +1,139 @@
+@page "/games/{Id:int}/edit"
+@rendermode InteractiveServer
+@using board.game.Web.Services
+@using board.game.GameDb.Models
+@inject GamesApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>@(_game is null ? "Edit" : $"Edit {_game.Name}")</PageTitle>
+
+@if (_loading)
+{
+    <p class="text-muted">
+        <span class="loading-dots"><span></span><span></span><span></span></span>
+        Loading…
+    </p>
+}
+else if (_error is not null)
+{
+    <div class="alert alert-danger card-theme mb-3" role="alert">@_error</div>
+}
+else if (_game is null)
+{
+    <div class="card-theme p-4">
+        <p class="text-muted mb-0">Game not found.</p>
+        <a href="/games" class="btn btn-outline-primary mt-3">Back to list</a>
+    </div>
+}
+else
+{
+    <h1 class="page-title mb-4">Edit game</h1>
+
+    <div class="form-card">
+        <EditForm Model="_game" OnValidSubmit="Save" FormName="gameForm">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger mb-3" />
+
+            <div class="mb-4">
+                <label for="name" class="form-label">Name</label>
+                <InputText id="name" class="form-control" @bind-Value="_game.Name" />
+                <ValidationMessage For="@(() => _game.Name)" class="validation-message" />
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="form-label">Description</label>
+                <InputTextArea id="description" class="form-control" rows="3" @bind-Value="_game.Description" />
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label for="minPlayers" class="form-label">Min players</label>
+                    <InputNumber id="minPlayers" class="form-control" @bind-Value="_game.MinPlayers" />
+                </div>
+                <div class="col-md-6">
+                    <label for="maxPlayers" class="form-label">Max players</label>
+                    <InputNumber id="maxPlayers" class="form-control" @bind-Value="_game.MaxPlayers" />
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label for="minPlayTime" class="form-label">Min play time (min)</label>
+                    <InputNumber id="minPlayTime" class="form-control" @bind-Value="_game.MinPlayTimeMinutes" />
+                </div>
+                <div class="col-md-6">
+                    <label for="maxPlayTime" class="form-label">Max play time (min)</label>
+                    <InputNumber id="maxPlayTime" class="form-control" @bind-Value="_game.MaxPlayTimeMinutes" />
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label for="minAge" class="form-label">Min age</label>
+                    <InputNumber id="minAge" class="form-control" @bind-Value="_game.MinAge" />
+                </div>
+                <div class="col-md-6">
+                    <label for="yearPublished" class="form-label">Year published</label>
+                    <InputNumber id="yearPublished" class="form-control" @bind-Value="_game.YearPublished" />
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
+                <InputText id="thumbnailUrl" class="form-control" @bind-Value="_game.ThumbnailUrl" />
+            </div>
+
+            <div class="mb-4">
+                <label for="bggLink" class="form-label">BoardGameGeek link</label>
+                <InputText id="bggLink" class="form-control" @bind-Value="_game.BggLink" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a class="btn btn-outline-primary" href="/games/@_game.Id">Cancel</a>
+            </div>
+        </EditForm>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Game? _game;
+    private bool _loading = true;
+    private string? _error;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadGame();
+    }
+
+    private async Task LoadGame()
+    {
+        _loading = true;
+        _error = null;
+        try
+        {
+            _game = await Api.GetGameByIdAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            _error = $"Failed to load game: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task Save()
+    {
+        if (_game is null) return;
+        var ok = await Api.UpdateGameAsync(Id, _game);
+        if (ok)
+            Navigation.NavigateTo($"/games/{Id}", forceLoad: true);
+        else
+            _error = "Failed to save game.";
+    }
+}

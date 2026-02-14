@@ -1,0 +1,111 @@
+@page "/games"
+@rendermode InteractiveServer
+@using board.game.Web.Services
+@using board.game.GameDb.Models
+@inject GamesApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>My Board Games</PageTitle>
+
+<h1 class="page-title mb-4">My Board Games</h1>
+
+@if (_loading)
+{
+    <p class="text-muted">
+        <span class="loading-dots"><span></span><span></span><span></span></span>
+        Loading…
+    </p>
+}
+else if (_error is not null)
+{
+    <div class="alert alert-danger card-theme" role="alert">@_error</div>
+}
+else if (_games.Count == 0)
+{
+    <div class="card-theme p-5 text-center">
+        <p class="text-muted mb-0">No games in your collection yet.</p>
+    </div>
+}
+else
+{
+    <div class="games-grid">
+        @foreach (var game in _games)
+        {
+            <div class="game-card">
+                <div class="game-card-image">
+                    @if (!string.IsNullOrWhiteSpace(game.ThumbnailUrl))
+                    {
+                        <img src="@game.ThumbnailUrl" alt="@game.Name" loading="lazy" />
+                    }
+                    else
+                    {
+                        <span class="text-muted small">No image</span>
+                    }
+                </div>
+                <div class="game-card-body">
+                    <h2 class="game-card-title">
+                        <a href="/games/@game.Id">@game.Name</a>
+                    </h2>
+                    <div class="game-card-meta">
+                        <span>@game.MinPlayers–@game.MaxPlayers players</span>
+                        <span>@FormatPlayTime(game)</span>
+                        @if (game.YearPublished.HasValue)
+                        {
+                            <span>@game.YearPublished</span>
+                        }
+                    </div>
+                    <div class="game-card-actions">
+                        <a class="btn btn-sm btn-outline-primary" href="/games/@game.Id/edit">Edit</a>
+                        <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => DeleteGame(game)">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<Game> _games = [];
+    private bool _loading = true;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGames();
+    }
+
+    private async Task LoadGames()
+    {
+        _loading = true;
+        _error = null;
+        try
+        {
+            _games = (await Api.GetGamesAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            _error = $"Failed to load games: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private static string FormatPlayTime(Game game)
+    {
+        if (game.MinPlayTimeMinutes is null && game.MaxPlayTimeMinutes is null) return "—";
+        if (game.MinPlayTimeMinutes == game.MaxPlayTimeMinutes)
+            return $"{game.MinPlayTimeMinutes} min";
+        return $"{game.MinPlayTimeMinutes ?? 0}–{game.MaxPlayTimeMinutes ?? 0} min";
+    }
+
+    private async Task DeleteGame(Game game)
+    {
+        if (!await Api.DeleteGameAsync(game.Id))
+            return;
+        _games.RemoveAll(g => g.Id == game.Id);
+    }
+}

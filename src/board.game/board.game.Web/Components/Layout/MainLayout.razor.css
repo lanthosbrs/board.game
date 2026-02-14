@@ -2,6 +2,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
 }
 
 main {
@@ -9,12 +10,12 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background: var(--bg-sidebar, #1a2f38);
 }
 
 .top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
+    background: var(--bg-card, #fff);
+    border-bottom: 1px solid var(--border, #e5e0d8);
     justify-content: flex-end;
     height: 3.5rem;
     display: flex;
@@ -25,10 +26,12 @@ main {
         white-space: nowrap;
         margin-left: 1.5rem;
         text-decoration: none;
+        color: var(--text-muted, #5c5c5c);
+        font-weight: 500;
     }
 
     .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
-        text-decoration: underline;
+        color: var(--accent, #c9a227);
     }
 
     .top-row ::deep a:first-child {
@@ -52,7 +55,7 @@ main {
     }
 
     .sidebar {
-        width: 250px;
+        width: 260px;
         height: 100vh;
         position: sticky;
         top: 0;
@@ -77,9 +80,10 @@ main {
 }
 
 #blazor-error-ui {
-    background: lightyellow;
+    background: #fdecea;
+    border-top: 1px solid #f5c6cb;
     bottom: 0;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
     display: none;
     left: 0;
     padding: 0.6rem 1.25rem 0.7rem 1.25rem;

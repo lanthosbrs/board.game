@@ -1,0 +1,153 @@
+@page "/games/{Id:int}"
+@rendermode InteractiveServer
+@using board.game.Web.Services
+@using board.game.GameDb.Models
+@inject GamesApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>@(_game?.Name ?? "Game")</PageTitle>
+
+@if (_loading)
+{
+    <p class="text-muted">
+        <span class="loading-dots"><span></span><span></span><span></span></span>
+        Loading…
+    </p>
+}
+else if (_error is not null)
+{
+    <div class="alert alert-danger card-theme" role="alert">@_error</div>
+}
+else if (_game is null)
+{
+    <div class="card-theme p-4">
+        <p class="text-muted mb-0">Game not found.</p>
+        <a href="/games" class="btn btn-outline-primary mt-3">Back to list</a>
+    </div>
+}
+else
+{
+    <div class="detail-hero">
+        @if (!string.IsNullOrWhiteSpace(_game.ThumbnailUrl))
+        {
+            <div class="detail-thumb">
+                <img src="@_game.ThumbnailUrl" alt="@_game.Name" />
+            </div>
+        }
+        <div class="detail-hero-content">
+            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                <h1 class="page-title mb-0">@_game.Name</h1>
+                <div class="d-flex gap-2">
+                    <a class="btn btn-primary" href="/games/@_game.Id/edit">Edit</a>
+                    <button type="button" class="btn btn-outline-danger" @onclick="ConfirmDelete">Delete</button>
+                </div>
+            </div>
+            <div class="detail-meta-row">
+                <div class="detail-meta-item">
+                    <strong>Players</strong>
+                    @_game.MinPlayers–@_game.MaxPlayers
+                </div>
+                <div class="detail-meta-item">
+                    <strong>Play time</strong>
+                    @FormatPlayTime(_game)
+                </div>
+                @if (_game.MinAge.HasValue)
+                {
+                    <div class="detail-meta-item">
+                        <strong>Min. age</strong>
+                        @_game.MinAge
+                    </div>
+                }
+                @if (_game.YearPublished.HasValue)
+                {
+                    <div class="detail-meta-item">
+                        <strong>Year</strong>
+                        @_game.YearPublished
+                    </div>
+                }
+            </div>
+            @if (!string.IsNullOrWhiteSpace(_game.Description))
+            {
+                <p class="detail-description mb-0">@_game.Description</p>
+            }
+            @if (!string.IsNullOrWhiteSpace(_game.BggLink))
+            {
+                <a href="@_game.BggLink" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm mt-3">View on BoardGameGeek</a>
+            }
+        </div>
+    </div>
+
+    <a href="/games" class="text-muted small text-decoration-none">← Back to list</a>
+}
+
+@if (_showDeleteConfirm)
+{
+    <div class="modal show d-block modal-overlay" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title">Delete game?</h5>
+                    <button type="button" class="btn-close" @onclick="() => _showDeleteConfirm = false" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    Are you sure you want to remove &quot;@_game?.Name&quot; from your collection?
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-secondary" @onclick="() => _showDeleteConfirm = false">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="DoDelete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Game? _game;
+    private bool _loading = true;
+    private string? _error;
+    private bool _showDeleteConfirm;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadGame();
+    }
+
+    private async Task LoadGame()
+    {
+        _loading = true;
+        _error = null;
+        try
+        {
+            _game = await Api.GetGameByIdAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            _error = $"Failed to load game: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private static string FormatPlayTime(Game game)
+    {
+        if (game.MinPlayTimeMinutes is null && game.MaxPlayTimeMinutes is null) return "—";
+        if (game.MinPlayTimeMinutes == game.MaxPlayTimeMinutes)
+            return $"{game.MinPlayTimeMinutes} min";
+        return $"{game.MinPlayTimeMinutes ?? 0}–{game.MaxPlayTimeMinutes ?? 0} min";
+    }
+
+    private void ConfirmDelete() => _showDeleteConfirm = true;
+
+    private async Task DoDelete()
+    {
+        if (_game is null) return;
+        if (await Api.DeleteGameAsync(_game.Id))
+            Navigation.NavigateTo("/games", forceLoad: true);
+        _showDeleteConfirm = false;
+    }
+}
