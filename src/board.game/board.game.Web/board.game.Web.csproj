@@ -11,4 +11,9 @@
     <ProjectReference Include="..\board.game.ServiceDefaults\board.game.ServiceDefaults.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Align with GameDb to avoid EF Core version conflict (MSB3277) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.3" />
+  </ItemGroup>
+
 </Project>

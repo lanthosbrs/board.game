@@ -1,0 +1,114 @@
+@page "/games/new"
+@rendermode InteractiveServer
+@using board.game.Web.Services
+@using board.game.GameDb.Models
+@using board.game.Web.Components.Layout
+@inject GamesApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>Add game</PageTitle>
+
+<Breadcrumb Items="_breadcrumb" />
+
+<h1 class="page-title mb-4">Add game</h1>
+
+@if (_error is not null)
+{
+    <div class="alert alert-danger card-theme mb-3" role="alert">@_error</div>
+}
+
+<div class="form-card">
+    <EditForm Model="_game" OnValidSubmit="Create" FormName="gameNewForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger mb-3" />
+
+        <div class="mb-4">
+            <label for="name" class="form-label">Name</label>
+            <InputText id="name" class="form-control" @bind-Value="_game.Name" />
+            <ValidationMessage For="@(() => _game.Name)" class="validation-message" />
+        </div>
+
+        <div class="mb-4">
+            <label for="description" class="form-label">Description</label>
+            <InputTextArea id="description" class="form-control" rows="3" @bind-Value="_game.Description" />
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label for="minPlayers" class="form-label">Min players</label>
+                <InputNumber id="minPlayers" class="form-control" @bind-Value="_game.MinPlayers" />
+            </div>
+            <div class="col-md-6">
+                <label for="maxPlayers" class="form-label">Max players</label>
+                <InputNumber id="maxPlayers" class="form-control" @bind-Value="_game.MaxPlayers" />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label for="minPlayTime" class="form-label">Min play time (min)</label>
+                <InputNumber id="minPlayTime" class="form-control" @bind-Value="_game.MinPlayTimeMinutes" />
+            </div>
+            <div class="col-md-6">
+                <label for="maxPlayTime" class="form-label">Max play time (min)</label>
+                <InputNumber id="maxPlayTime" class="form-control" @bind-Value="_game.MaxPlayTimeMinutes" />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label for="minAge" class="form-label">Min age</label>
+                <InputNumber id="minAge" class="form-control" @bind-Value="_game.MinAge" />
+            </div>
+            <div class="col-md-6">
+                <label for="yearPublished" class="form-label">Year published</label>
+                <InputNumber id="yearPublished" class="form-control" @bind-Value="_game.YearPublished" />
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
+            <InputText id="thumbnailUrl" class="form-control" @bind-Value="_game.ThumbnailUrl" />
+        </div>
+
+        <div class="mb-4">
+            <label for="bggLink" class="form-label">BoardGameGeek link</label>
+            <InputText id="bggLink" class="form-control" @bind-Value="_game.BggLink" />
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <button type="submit" class="btn btn-primary" disabled="@_saving">@(_saving ? "Adding…" : "Add game")</button>
+            <a class="btn btn-outline-secondary" href="/games">Cancel</a>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private static readonly IReadOnlyList<BreadcrumbItem> _breadcrumb =
+    [
+        new BreadcrumbItem { Label = "My Games", Href = "/games" },
+        new BreadcrumbItem { Label = "Add game" }
+    ];
+
+    private Game _game = new() { Name = "" };
+    private string? _error;
+    private bool _saving;
+
+    private async Task Create()
+    {
+        _error = null;
+        _saving = true;
+        try
+        {
+            var created = await Api.CreateGameAsync(_game);
+            if (created is not null)
+                Navigation.NavigateTo($"/games/{created.Id}", forceLoad: true);
+            else
+                _error = "Failed to add game.";
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}
