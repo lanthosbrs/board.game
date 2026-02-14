@@ -2,11 +2,13 @@
 @rendermode InteractiveServer
 @using board.game.Web.Services
 @using board.game.GameDb.Models
+@using board.game.Web.Components.Layout
 @inject GamesApiClient Api
 @inject NavigationManager Navigation
 
 <PageTitle>My Board Games</PageTitle>
 
+<Breadcrumb Items="_breadcrumb" />
 <h1 class="page-title mb-4">My Board Games</h1>
 
 @if (_loading)
@@ -67,6 +69,9 @@ else
 }
 
 @code {
+    private static readonly IReadOnlyList<BreadcrumbItem> _breadcrumb =
+        [new BreadcrumbItem { Label = "My Games", Href = "/games" }];
+
     private List<Game> _games = [];
     private bool _loading = true;
     private string? _error;

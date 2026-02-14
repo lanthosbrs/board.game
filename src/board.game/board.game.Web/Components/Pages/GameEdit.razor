@@ -2,11 +2,16 @@
 @rendermode InteractiveServer
 @using board.game.Web.Services
 @using board.game.GameDb.Models
+@using board.game.Web.Components.Layout
 @inject GamesApiClient Api
 @inject NavigationManager Navigation
 
 <PageTitle>@(_game is null ? "Edit" : $"Edit {_game.Name}")</PageTitle>
 
+@if (_game is not null)
+{
+    <Breadcrumb Items="@(new[] { new BreadcrumbItem { Label = "My Games", Href = "/games" }, new BreadcrumbItem { Label = _game.Name, Href = $"/games/{Id}" }, new BreadcrumbItem { Label = "Edit" } })" />
+}
 @if (_loading)
 {
     <p class="text-muted">
@@ -88,9 +93,10 @@ else
                 <InputText id="bggLink" class="form-control" @bind-Value="_game.BggLink" />
             </div>
 
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 flex-wrap">
                 <button type="submit" class="btn btn-primary">Save</button>
                 <a class="btn btn-outline-primary" href="/games/@_game.Id">Cancel</a>
+                <a class="btn btn-outline-secondary" href="/games">Back to list</a>
             </div>
         </EditForm>
     </div>
