@@ -1,8 +1,8 @@
-﻿using board.game.GameDb.Context;
+using board.game.GameDb.Context;
 using board.game.GameDb.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace board.game.Services
 {
@@ -17,33 +17,41 @@ namespace board.game.Services
 
         public void AddGame(Game game)
         {
-            throw new NotImplementedException();
+            _context.Games.Add(game);
+            _context.SaveChanges();
         }
 
         public IEnumerable<Game> GetAllGames()
         {
             return _context.Games.ToList();
-
         }
 
         public Game GetGameById(int id)
         {
-            throw new NotImplementedException();
+            var game = _context.Games.Find(id);
+            if (game == null)
+                throw new KeyNotFoundException($"Game with id {id} not found.");
+            return game;
         }
 
         public Game GetGameByName(string name)
         {
-            throw new NotImplementedException();
+            var game = _context.Games.FirstOrDefault(g => g.Name == name);
+            if (game == null)
+                throw new KeyNotFoundException($"Game with name '{name}' not found.");
+            return game;
         }
 
         public void RemoveGame(Game game)
         {
-            throw new NotImplementedException();
+            _context.Games.Remove(game);
+            _context.SaveChanges();
         }
 
         public void UpdateGame(Game game)
         {
-            throw new NotImplementedException();
+            _context.Games.Update(game);
+            _context.SaveChanges();
         }
     }
 }
