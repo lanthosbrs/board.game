@@ -59,6 +59,10 @@ else
                         {
                             <span>@game.YearPublished</span>
                         }
+                        @if (game.ShelfNumber.HasValue)
+                        {
+                            <span>Shelf @game.ShelfNumber</span>
+                        }
                     </div>
                     <div class="game-card-actions">
                         <a class="btn btn-sm btn-outline-primary" href="/games/@game.Id/edit">Edit</a>

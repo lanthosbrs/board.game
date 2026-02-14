@@ -92,6 +92,7 @@ namespace board.game.ApiService.Controllers
                 existing.MinAge = game.MinAge;
                 existing.YearPublished = game.YearPublished;
                 existing.ThumbnailUrl = game.ThumbnailUrl;
+                existing.ShelfNumber = game.ShelfNumber;
                 existing.PublisherId = game.PublisherId;
                 _gameServices.UpdateGame(existing);
                 return Ok(existing);

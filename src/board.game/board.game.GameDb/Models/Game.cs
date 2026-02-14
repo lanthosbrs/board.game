@@ -19,6 +19,9 @@ namespace board.game.GameDb.Models
         public int? YearPublished { get; set; }
         public string? ThumbnailUrl { get; set; }
 
+        /// <summary>Shelf number where the game is stored. For future WLED integration.</summary>
+        public int? ShelfNumber { get; set; }
+
         public int? PublisherId { get; set; }
         public Publisher? Publisher { get; set; }
 

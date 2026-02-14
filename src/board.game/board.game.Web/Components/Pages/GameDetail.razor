@@ -70,6 +70,13 @@ else
                         @_game.YearPublished
                     </div>
                 }
+                @if (_game.ShelfNumber.HasValue)
+                {
+                    <div class="detail-meta-item">
+                        <strong>Location</strong>
+                        Shelf @_game.ShelfNumber
+                    </div>
+                }
             </div>
             @if (!string.IsNullOrWhiteSpace(_game.Description))
             {

@@ -84,6 +84,12 @@ else
             </div>
 
             <div class="mb-4">
+                <label for="shelfNumber" class="form-label">Shelf number</label>
+                <InputNumber id="shelfNumber" class="form-control" @bind-Value="_game.ShelfNumber" />
+                <span class="form-text">Where the game is stored (for future WLED integration).</span>
+            </div>
+
+            <div class="mb-4">
                 <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
                 <InputText id="thumbnailUrl" class="form-control" @bind-Value="_game.ThumbnailUrl" />
             </div>
